@@ -18,39 +18,35 @@ def login():
     if addon.getSetting('browser') not in ['zadání přes web', 'načíst ze souboru']:
         from libs.api import init_driver
         driver = init_driver()
-        success = True
         LOGIN_BUTTON1 = {'CZ' : 'Přihlásit', 'SK' : 'Prihlásiť'}
         LOGIN_BUTTON2 = {'CZ' : 'Přihlásit se', 'SK' : 'Prihlásiť sa'}
         LOGIN_VERIFICATION = {'CZ' : 'Vložit peníze', 'SK' : 'Vložiť peniaze'}
 
         addon = xbmcaddon.Addon()
-        driver.get(LOGIN_URL[addon.getSetting('tipsport_version')])
-        WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//button[text()="' + LOGIN_BUTTON1[addon.getSetting('tipsport_version')] + '"]')))
-        login_button = driver.find_element(By.XPATH, '//button[text()="' + LOGIN_BUTTON1[addon.getSetting('tipsport_version')] + '"]')
-        login_button.click()
-        WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.NAME, 'username')))
-        username = driver.find_element(By.NAME, 'username')
-        username.send_keys(addon.getSetting('username'))
-        password = driver.find_element(By.NAME, 'password')
-        password.send_keys(addon.getSetting('password'))
+        try:
+            driver.get(LOGIN_URL[addon.getSetting('tipsport_version')])
+            WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//button[text()="' + LOGIN_BUTTON1[addon.getSetting('tipsport_version')] + '"]')))
+            login_button = driver.find_element(By.XPATH, '//button[text()="' + LOGIN_BUTTON1[addon.getSetting('tipsport_version')] + '"]')
+            login_button.click()
+            WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.NAME, 'username')))
+            username = driver.find_element(By.NAME, 'username')
+            username.send_keys(addon.getSetting('username'))
+            password = driver.find_element(By.NAME, 'password')
+            password.send_keys(addon.getSetting('password'))
 
-        login_button = driver.find_element(By.XPATH, '//button[text()="' + LOGIN_BUTTON2[addon.getSetting('tipsport_version')] + '"]')
-        login_button.click()
-        try:
-            WebDriverWait(driver, 3).until(EC.visibility_of_element_located((By.XPATH, '//a[text()="' + LOGIN_VERIFICATION[addon.getSetting('tipsport_version')] + '"]')))
-        except Exception as e:
+            login_button = driver.find_element(By.XPATH, '//button[text()="' + LOGIN_BUTTON2[addon.getSetting('tipsport_version')] + '"]')
+            login_button.click()
+            WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, '//a[text()="' + LOGIN_VERIFICATION[addon.getSetting('tipsport_version')] + '"]')))
+            save_session(json.dumps(driver.get_cookies()))
+            return True
+        except Exception:
             xbmcgui.Dialog().notification('Tipsport.cz', 'Došlo k chybě při přihlášení', xbmcgui.NOTIFICATION_ERROR, 5000)
-            success = False
-            import time
-            time.sleep(120)
-        cookies = driver.get_cookies()
-        data = json.dumps(cookies)
-        save_session(data)
-        try:
-            driver.quit()
-        except Exception as e:
-            xbmcgui.Dialog().notification('Tipsport.cz', 'Došlo k chybě při volání prohlížeče', xbmcgui.NOTIFICATION_ERROR, 5000)
-        return success
+            return False
+        finally:
+            try:
+                driver.quit()
+            except Exception:
+                xbmcgui.Dialog().notification('Tipsport.cz', 'Došlo k chybě při volání prohlížeče', xbmcgui.NOTIFICATION_ERROR, 5000)
     elif addon.getSetting('browser') == 'zadání přes web':
         xbmcgui.Dialog().textviewer('Tipsport.cz', 'Připojte se z prohlížeče na http://127.0.0.1:8089/ a zadejte do formuláře platné JSESSIONID podle návodu.')
         sys.exit()
