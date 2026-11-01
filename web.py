@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
 import xbmcaddon
+import xbmc
+from socketserver import ThreadingMixIn
+from wsgiref.simple_server import make_server, WSGIServer
 
-from bottle import run, route, post, template, request, static_file, TEMPLATE_PATH, response, redirect, abort
+from bottle import run, route, post, template, request, static_file, TEMPLATE_PATH, response, redirect, abort, default_app
 import json
 
 from libs.session import save_session
 from libs.api import set_domain
 from libs.live_tv import playlist, resolve_channel, StreamUnavailable
+from libs.shared_stream import shared_input
 
 addon = xbmcaddon.Addon()
 template_dir = os.path.join(addon.getAddonInfo('path'), 'resources','templates')
@@ -58,6 +62,42 @@ def jellyfin_stream(channel):
     return redirect(url, 302)
 
 
+@route('/jellyfin/status')
+def jellyfin_status():
+    response.set_header('Cache-Control', 'no-store')
+    return shared_input.status()
+
+
+@route('/jellyfin/<channel>.ts')
+def jellyfin_shared_stream(channel):
+    if channel not in ('kometa', 'test-tennis'):
+        abort(404, 'Unknown channel')
+    if request.method == 'HEAD':
+        response.content_type = 'video/MP2T'
+        return ''
+    try:
+        body = shared_input.open(channel)
+    except StreamUnavailable as error:
+        abort(503, str(error))
+    except Exception:
+        abort(503, 'Local media input unavailable.')
+    response.content_type = 'video/MP2T'
+    response.set_header('Cache-Control', 'no-store')
+    return body
+
+
+class ThreadedServer(ThreadingMixIn, WSGIServer):
+    daemon_threads = True
+
+
 def start_server():
-    run(host = '127.0.0.1', port = 8089)
+    monitor = xbmc.Monitor()
+    server = make_server('127.0.0.1', 8089, default_app(), server_class=ThreadedServer)
+    server.timeout = 0.5
+    try:
+        while not monitor.abortRequested():
+            server.handle_request()
+    finally:
+        shared_input.stop()
+        server.server_close()
 

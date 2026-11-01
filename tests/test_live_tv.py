@@ -31,8 +31,8 @@ class LiveTVTests(unittest.TestCase):
         result = live_tv.playlist()
         self.assertTrue(result.startswith('#EXTM3U\n'))
         self.assertEqual([line for line in result.splitlines() if line.startswith('http')], [
-            'http://127.0.0.1:8089/jellyfin/kometa.m3u8',
-            'http://127.0.0.1:8089/jellyfin/test-tennis.m3u8'])
+            'http://127.0.0.1:8089/jellyfin/kometa.ts',
+            'http://127.0.0.1:8089/jellyfin/test-tennis.ts'])
 
     def test_kometa_selects_only_live_matching_game(self):
         program = {'program': [{'matchesByTimespans': [[

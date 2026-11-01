@@ -20,7 +20,7 @@ def playlist(include_test=True):
     for channel_id, name in channels:
         rows.extend(['#EXTINF:-1 tvg-id="tipsport.' + channel_id +
                      '" group-title="Tipsport",' + name,
-                     BASE_URL + '/jellyfin/' + channel_id + '.m3u8'])
+                     BASE_URL + '/jellyfin/' + channel_id + '.ts'])
     return '\n'.join(rows) + '\n'
 
 
