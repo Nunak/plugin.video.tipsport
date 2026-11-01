@@ -36,5 +36,5 @@ def page():
     return template('form.tpl', message = message)
 
 def start_server():
-    run(host = '0.0.0.0', port = 8089)
+    run(host = '127.0.0.1', port = 8089)
 

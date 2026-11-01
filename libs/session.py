@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import json
-import socket
 
 LOGIN_URL = {'CZ' : 'https://www.tipsport.cz/', 'SK' : 'https://www.tipsport.sk/'}
 
@@ -53,9 +52,7 @@ def login():
             xbmcgui.Dialog().notification('Tipsport.cz', 'Došlo k chybě při volání prohlížeče', xbmcgui.NOTIFICATION_ERROR, 5000)
         return success
     elif addon.getSetting('browser') == 'zadání přes web':
-        hostname = socket.gethostname()
-        ip = socket.gethostbyname(hostname)
-        xbmcgui.Dialog().textviewer('Tipsport.cz', 'Připojte se z prohlížeče na http://' + ip + ':8089/ a zadejte do formuláře platné JSESSIONID podle návodu.')
+        xbmcgui.Dialog().textviewer('Tipsport.cz', 'Připojte se z prohlížeče na http://127.0.0.1:8089/ a zadejte do formuláře platné JSESSIONID podle návodu.')
         sys.exit()
     else:
         jsession_file_folder = addon.getSetting('jsession_file_folder')

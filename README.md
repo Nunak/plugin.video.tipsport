@@ -39,8 +39,10 @@ Selenium Grid lze pustit i na jiném počítači a doplněk k němu může přis
 Tento způsob nahrazuje přihlášení a při jeho použití není třeba volání žádného prohlížeče z doplňku.<br>
 
 - v nastavení dopňku vyberte v Prohlížeč zadání přes web<br>
-- v prohlížeči otevřete stránku z formulářem pro zadání JSESSIONID - http://&lt;adresa stroje s Kodi&gt;:8089/<br>
-- na stránce zadejte podle postupu hodnotu JSESSIONID<br><br>
+- v prohlížeči otevřete stránku z formulářem pro zadání JSESSIONID - http://127.0.0.1:8089/<br>
+- na stránce zadejte podle postupu hodnotu JSESSIONID<br>
+- formulář otevřete přímo na počítači s Kodi; naslouchá pouze na místním rozhraní a není dostupný ostatním zařízením v síti<br>
+- JSESSIONID umožňuje přístup k přihlášené relaci; nesdílejte ho a při skončení platnosti předejte nové<br><br>
 
 <hr>
 v1.1.8 (1.3.2025)<br>
