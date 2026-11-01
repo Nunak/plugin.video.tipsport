@@ -25,7 +25,7 @@ def list_streams(id, label):
                     if len(item) > 0:
                         for i in range(len(item)):
                             if item[i]['live'] == True and item[i]['competition'] not in blacklist['competitions'] and item[i]['sport'] not in blacklist['sports']:
-                                list_item = xbmcgui.ListItem(label = item[i]['name'] + ' [COLOR=gray] / ' + item[i]['score']['statusOffer'] +'[/COLOR]\n' + '[COLOR=gray]' + item[i]['sport'] + ' / ' + item[i]['competition'] + '[/COLOR]')
+                                list_item = xbmcgui.ListItem(label = item[i]['name'] + ' [COLOR=gray] / ' + str((item[i].get('score') or {}).get('statusOffer') or '') +'[/COLOR]\n' + '[COLOR=gray]' + item[i]['sport'] + ' / ' + item[i]['competition'] + '[/COLOR]')
                                 list_item.setInfo('video', {'mediatype':'movie', 'title': item[i]['name']})
                                 menus = [('Ignorovat: ' + item[i]['sport'], 'RunPlugin(plugin://' + plugin_id + '?action=add_to_blacklist&type=sports&name=' + item[i]['sport'] + ')'), 
                                         ('Ignorovat: ' + item[i]['competition'], 'Container.Update(plugin://' + plugin_id + '?action=add_to_blacklist&type=competitions&name=' + item[i]['competition'] + ')')]
